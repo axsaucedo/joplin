@@ -748,6 +748,14 @@ class AppGui {
 				// Handle special shortcuts
 				// -------------------------------------------------------------------------
 
+				// Close modal overlay on ESC
+				if (name === 'ESCAPE') {
+					if (this.widget('overlayWindow') && this.widget('overlayWindow').visible) {
+						this.hideModalOverlay();
+						return;
+					}
+				}
+
 				if (name === 'CTRL_D') {
 					const cmd = this.app().currentCommand();
 

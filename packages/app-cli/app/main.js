@@ -62,7 +62,12 @@ Setting.setConstant('appType', 'cli');
 
 let keytar;
 try {
-	keytar = shim.platformSupportsKeyChain() ? require('keytar') : null;
+	// Skip keytar if JOPLIN_NO_KEYCHAIN environment variable is set
+	if (!process.env.JOPLIN_NO_KEYCHAIN) {
+		keytar = shim.platformSupportsKeyChain() ? require('keytar') : null;
+	} else {
+		keytar = null;
+	}
 } catch (error) {
 	console.error('Cannot load keytar - keychain support will be disabled', error);
 	keytar = null;

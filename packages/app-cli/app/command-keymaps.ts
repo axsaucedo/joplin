@@ -19,9 +19,6 @@ class Command extends BaseCommand {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public override async action(_args: any) {
 		const keymaps = await app().loadKeymaps();
-
-		this.stdout(_('Configured keyboard shortcuts:\n'));
-
 		const rows = [];
 		const padding = '  ';
 
@@ -35,11 +32,17 @@ class Command extends BaseCommand {
 			rows.push([padding + formattedKeys, item.type, item.command]);
 		}
 
-		cliUtils.printArray(this.stdout.bind(this), rows);
+		const lines = [_('Configured keyboard shortcuts:\n\n')];
+		cliUtils.printArray((line: string) => lines.concat(line), rows);
+		const text = lines.join('\n');
 
 		if (app().gui() && !app().gui().isDummy()) {
-			app().gui().showConsole();
-			app().gui().maximizeConsole();
+			// Show in scrollable modal in TUI mode
+			app().gui().showModalOverlay(text);
+			await app().gui().forceRender();
+		} else {
+			// Show as table in console in CLI mode
+			this.stdout(text);
 		}
 	}
 }
